@@ -53,27 +53,24 @@ document.body.appendChild(stats.dom);
 
 const gui = new GUI();
 
+// const cubeData = {
+//   width: 1,
+//   height: 1,
+//   depth: 1,
+//   widthSegments: 1,
+//   heightSegments: 1,
+//   depthSegments: 1
+// }
+
 const cubeFolder = gui.addFolder("Cube");
-cubeFolder.add(cube, "visible");
-cubeFolder.open();
-
-const positionFolder = cubeFolder.addFolder("Position");
-positionFolder.add(cube.position, "x", -5, 5);
-positionFolder.add(cube.position, "y", -5, 5);
-positionFolder.add(cube.position, "z", -5, 5);
-positionFolder.open();
-
-const rotationFolder = cubeFolder.addFolder("Rotation");
-rotationFolder.add(cube.rotation, "x", 0, Math.PI * 2);
-rotationFolder.add(cube.rotation, "y", 0, Math.PI * 2);
-rotationFolder.add(cube.rotation, "z", 0, Math.PI * 2);
-rotationFolder.open();
-
-const scaleFolder = cubeFolder.addFolder("Scale");
-scaleFolder.add(cube.scale, "x", -5, 5);
-scaleFolder.add(cube.scale, "y", -5, 5);
-scaleFolder.add(cube.scale, "z", -5, 5);
-scaleFolder.open();
+const cubeRotationFolder = cubeFolder.addFolder("Rotation");
+cubeRotationFolder.add(cube.rotation, "x", 0, Math.PI * 2, 0.01);
+cubeRotationFolder.add(cube.rotation, "y", 0, Math.PI * 2, 0.01);
+cubeRotationFolder.add(cube.rotation, "z", 0, Math.PI * 2, 0.01);
+const cubePositionFolder = cubeFolder.addFolder("Position");
+cubePositionFolder.add(cube.position, "x", -10, 10);
+cubePositionFolder.add(cube.position, "y", -10, 10);
+cubePositionFolder.add(cube.position, "z", -10, 10);
 
 function animate() {
   requestAnimationFrame(animate);
