@@ -5,7 +5,16 @@ import Stats from "three/addons/libs/stats.module.js";
 import { GUI } from "dat.gui";
 
 const scene = new THREE.Scene();
-scene.add(new THREE.AxesHelper(5));
+scene.environment = new THREE.CubeTextureLoader()
+  .setPath("https://sbcode.net/img/")
+  .load(["px.png", "nx.png", "py.png", "ny.png", "pz.png", "nz.png"]);
+
+const axesHelper = new THREE.AxesHelper(5);
+scene.add(axesHelper);
+
+const gridHelper = new THREE.GridHelper();
+gridHelper.position.y = -1;
+scene.add(gridHelper);
 
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -13,34 +22,46 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
-camera.position.set(1, 2, 3);
+camera.position.set(0, 2, 7);
 
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-window.addEventListener("resize", () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
-
-new OrbitControls(camera, renderer.domElement);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
 
 const boxGeometry = new THREE.BoxGeometry();
-const material = new THREE.MeshNormalMaterial({ wireframe: true });
+
+const sphereGeometry = new THREE.SphereGeometry();
+
+const icosahedronGeometry = new THREE.IcosahedronGeometry();
+
+const planeGeometry = new THREE.PlaneGeometry();
+
+const torusKnotGeometry = new THREE.TorusKnotGeometry();
+
+const material = new THREE.MeshStandardMaterial();
 
 const cube = new THREE.Mesh(boxGeometry, material);
-//cube.position.x = -4
+cube.position.set(5, 0, 0);
 scene.add(cube);
 
-// const sphere = new THREE.Mesh(sphereGeometry, material)
-// sphere.position.x = 0
-// scene.add(sphere)
+const sphere = new THREE.Mesh(sphereGeometry, material);
+sphere.position.set(3, 0, 0);
+scene.add(sphere);
 
-// const icosahedron = new THREE.Mesh(icosahedronGeometry, material)
-// scene.add(icosahedron)
-// sphere.position.x = 4
+const icosahedron = new THREE.Mesh(icosahedronGeometry, material);
+icosahedron.position.set(0, 0, 0);
+scene.add(icosahedron);
+
+const plane = new THREE.Mesh(planeGeometry, material);
+plane.position.set(-2, 0, 0);
+scene.add(plane);
+
+const torusKnot = new THREE.Mesh(torusKnotGeometry, material);
+torusKnot.position.set(-5, 0, 0);
+scene.add(torusKnot);
 
 window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -51,29 +72,39 @@ window.addEventListener("resize", () => {
 const stats = new Stats();
 document.body.appendChild(stats.dom);
 
+const options = {
+  side: {
+    FrontSide: THREE.FrontSide,
+    BackSide: THREE.BackSide,
+    DoubleSide: THREE.DoubleSide,
+  },
+};
+
 const gui = new GUI();
 
-// const cubeData = {
-//   width: 1,
-//   height: 1,
-//   depth: 1,
-//   widthSegments: 1,
-//   heightSegments: 1,
-//   depthSegments: 1
-// }
+const materialFolder = gui.addFolder("THREE.Material");
+materialFolder
+  .add(material, "transparent")
+  .onChange(() => (material.needsUpdate = true));
+materialFolder.add(material, "opacity", 0, 1, 0.01);
+materialFolder
+  .add(material, "alphaTest", 0, 1, 0.01)
+  .onChange(() => updateMaterial());
+materialFolder.add(material, "visible");
+materialFolder
+  .add(material, "side", options.side)
+  .onChange(() => updateMaterial());
+materialFolder.open();
 
-const cubeFolder = gui.addFolder("Cube");
-const cubeRotationFolder = cubeFolder.addFolder("Rotation");
-cubeRotationFolder.add(cube.rotation, "x", 0, Math.PI * 2, 0.01);
-cubeRotationFolder.add(cube.rotation, "y", 0, Math.PI * 2, 0.01);
-cubeRotationFolder.add(cube.rotation, "z", 0, Math.PI * 2, 0.01);
-const cubePositionFolder = cubeFolder.addFolder("Position");
-cubePositionFolder.add(cube.position, "x", -10, 10);
-cubePositionFolder.add(cube.position, "y", -10, 10);
-cubePositionFolder.add(cube.position, "z", -10, 10);
+function updateMaterial() {
+  material.side = Number(material.side) as THREE.Side;
+  material.needsUpdate = true;
+}
 
 function animate() {
   requestAnimationFrame(animate);
+
+  controls.update();
 
   renderer.render(scene, camera);
 
