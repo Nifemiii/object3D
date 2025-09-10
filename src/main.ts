@@ -27,11 +27,26 @@ window.addEventListener("resize", () => {
 
 new OrbitControls(camera, renderer.domElement);
 
-const geometry = new THREE.BoxGeometry();
+const boxGeometry = new THREE.BoxGeometry();
 const material = new THREE.MeshNormalMaterial({ wireframe: true });
 
-const cube = new THREE.Mesh(geometry, material);
+const cube = new THREE.Mesh(boxGeometry, material);
+//cube.position.x = -4
 scene.add(cube);
+
+// const sphere = new THREE.Mesh(sphereGeometry, material)
+// sphere.position.x = 0
+// scene.add(sphere)
+
+// const icosahedron = new THREE.Mesh(icosahedronGeometry, material)
+// scene.add(icosahedron)
+// sphere.position.x = 4
+
+window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
 
 const stats = new Stats();
 document.body.appendChild(stats.dom);
