@@ -98,6 +98,7 @@ materialFolder.open();
 
 function updateMaterial() {
   material.side = Number(material.side) as THREE.Side;
+  console.log(material.side, "this");
   material.needsUpdate = true;
 }
 
